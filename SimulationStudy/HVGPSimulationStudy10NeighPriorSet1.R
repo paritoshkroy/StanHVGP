@@ -12,12 +12,12 @@ library(cmdstanr)
 ###########################################################################
 # Local PC
 ###########################################################################
-fpath <- "/home/ParitoshKRoy/git/ApproximateGP/HVGP/"
+fpath <- "/home/ParitoshKRoy/git/StanHVGP/"
 node <- 1
 ##########################################################################
 # ARC Preparation
 ##########################################################################
-fpath <- "/home/pkroy/ApproximateGP/HVGP/"
+fpath <- "/home/pkroy/StanHVGP/"
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args)==0) {
   stop("At least one argument must be supplied", call.=FALSE)
@@ -28,8 +28,8 @@ cat("Node is ", node, "\n")
 ######################################################################
 # Generating the data
 ######################################################################
-source(paste0(fpath,"UtilityFunctions.R"))
-source(paste0(fpath,"DataGeneration.R"))
+source(paste0(fpath,"RFiles/UtilityFunctions.R"))
+source(paste0(fpath,"SimulationStudy/DataGeneration.R"))
 
 ######################################################################
 # partition as observed and predicted
@@ -54,7 +54,7 @@ rm(obsDistMat)
 ################################################################################
 ## HVGP Preparation
 ################################################################################
-nNeighbors <- 10
+nNeighbors <- 25
 mra.spec <- GPvecchia::vecchia_specify(locs = obsCoords, m = nNeighbors, conditioning = 'mra', ordering = "maxmin", verbose = TRUE)
 obsY <- obsY[mra.spec$ord]
 obsCoords <- mra.spec$locsord
@@ -81,8 +81,8 @@ obsDistVec[tauID] <- 0
 nnZero <- length(obsDistVec)
 
 ## Prior elicitation: Prior Set 1
-lLimit <- quantile(obsDistVec[obsDistVec!=0], prob = 0.05)/2.75; lLimit
-uLimit <- quantile(obsDistVec[obsDistVec!=0], prob = 0.99)/2.75; uLimit
+lLimit <- quantile(obsDistVec[obsDistVec!=0], prob = 0); lLimit
+uLimit <- quantile(obsDistVec[obsDistVec!=0], prob = 1); uLimit
 
 library(nleqslv)
 ab <- nleqslv(c(5,0.1), getIGamma, lRange = lLimit, uRange = uLimit, prob = 0.98)$x
@@ -106,13 +106,13 @@ input <- list(N = nsize, K = ncol(NN_ind)-1,
               distVec = obsDistVec, mu_theta = mu_theta, 
               V_theta = V_theta, 
               # Prior Set 1: Half-Normal and Inv-Gamma
-              sigma_multiplier = sd(obsY)/2.58, 
-              tau_multiplier = sd(obsY)/2.58,
+              sigma_rate = -log(1-0.95)/sd(obsY), 
+              tau_rate = -log(1-0.95)/sd(obsY),
               a = ab[1], b = ab[2])
 str(input)
 library(cmdstanr)
 set_cmdstan_path(path = "~/cmdstan-2.36.0")
-stan_file <- paste0(fpath,"HVGP_PriorSet1.stan")
+stan_file <- paste0(fpath,"StanFiles/HVGP_PriorSet1.stan")
 mod <- cmdstan_model(stan_file, compile = TRUE)
 mod$check_syntax(pedantic = TRUE)
 mod$print()
@@ -146,5 +146,5 @@ library(bayesplot)
 color_scheme_set("brewer-Spectral")
 mcmc_trace(draws_df,  pars = pars, facet_args = list(ncol = 3)) + facet_text(size = 15)
 
-save(fit_summary, file = paste0(fpath, "HVGPSimulationStudy10NeighPriorSet1", node, ".RData"))
+save(fixed_summary, file = paste0(fpath, "SimulationStudy/HVGPSimulationStudy10NeighPriorSet1", node, ".RData"))
 

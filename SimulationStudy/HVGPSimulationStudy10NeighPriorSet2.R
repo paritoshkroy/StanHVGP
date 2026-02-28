@@ -12,12 +12,12 @@ library(cmdstanr)
 ###########################################################################
 # Local PC
 ###########################################################################
-fpath <- "/home/ParitoshKRoy/git/ApproximateGP/HVGP/"
+fpath <- "/home/ParitoshKRoy/git/StanHVGP/"
 node <- 1
 ##########################################################################
 # ARC Preparation
 ##########################################################################
-fpath <- "/home/pkroy/ApproximateGP/HVGP/"
+fpath <- "/home/pkroy/git/StanHVGP/"
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args)==0) {
   stop("At least one argument must be supplied", call.=FALSE)
@@ -28,8 +28,8 @@ cat("Node is ", node, "\n")
 ######################################################################
 # Generating the data
 ######################################################################
-source(paste0(fpath,"UtilityFunctions.R"))
-source(paste0(fpath,"DataGeneration.R"))
+source(paste0(fpath,"RFiles/UtilityFunctions.R"))
+source(paste0(fpath,"SimulationStudy/DataGeneration.R"))
 
 ######################################################################
 # partition as observed and predicted
@@ -118,7 +118,7 @@ input <- list(N = nsize, K = ncol(NN_ind)-1,
 str(input)
 library(cmdstanr)
 set_cmdstan_path(path = "~/cmdstan-2.36.0")
-stan_file <- paste0(fpath,"HVGP_PriorSet2.stan")
+stan_file <- paste0(fpath,"StanFiles/HVGP_PriorSet2.stan")
 mod <- cmdstan_model(stan_file, compile = TRUE)
 mod$check_syntax(pedantic = TRUE)
 mod$print()
@@ -152,5 +152,5 @@ library(bayesplot)
 color_scheme_set("brewer-Spectral")
 mcmc_trace(draws_df,  pars = pars, facet_args = list(ncol = 3)) + facet_text(size = 15)
 
-save(fit_summary, file = paste0(fpath, "HVGPSimulationStudy10NeighPriorSet2", node, ".RData"))
+save(fit_summary, file = paste0(fpath, "SimulationStudy/HVGPSimulationStudy10NeighPriorSet2", node, ".RData"))
 

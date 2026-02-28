@@ -4,7 +4,7 @@
 #SBATCH --ntasks=16              # number of processes
 #SBATCH --mem-per-cpu=16000M      # memory; default unit is megabytes
 #SBATCH --time=12:00:00         # time (HH:MM:SS)
-#SBATCH --output=/home/pkroy/ApproximateGP/HVGP/%x-%j.out
+#SBATCH --output=/home/pkroy/StanHVGP/SimulationStudy/%x-%j.out
 
 # Modules
 module load StdEnv/2023 r/4.4.0

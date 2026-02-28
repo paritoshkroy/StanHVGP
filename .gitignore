@@ -11,11 +11,19 @@
 # ...even if they are in subdirectories
 !*/
 
+StanFiles/*
+!StanFiles/*.stan
+
+RFiles/*
+!RFiles/*.R
+
+
 SimulationStudy/*
 !SimulationStudy/*.R
 !SimulationStudy/*.stan
 !SimulationStudy/*.sh
 !SimulationStudy/*.rda
+
 
 
 # if the files to be tracked are in subdirectories
